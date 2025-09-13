@@ -5,6 +5,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import WebSocket from "ws";
 import { v4 as uuidv4 } from "uuid";
+import { createFrameTool } from "../tools/write-tools/create-frame";
 
 const logger = {
   info: (message: string) => process.stderr.write(`[INFO] ${message}\n`),
@@ -85,7 +86,7 @@ function connectToFigma(port: number = 3055) {
   });
 }
 
-function sendCommandToFigma(
+export function sendCommandToFigma(
   command: string,
   params: unknown = {},
   timeoutMs: number = 30000
@@ -152,6 +153,8 @@ server.tool(
     }
   }
 );
+
+server.tool(createFrameTool.name, createFrameTool.description, createFrameTool.inputSchema.shape, createFrameTool.handler);
 
 
 async function main() {
