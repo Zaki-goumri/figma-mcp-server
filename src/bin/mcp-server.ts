@@ -6,6 +6,7 @@ import { z } from "zod";
 import WebSocket from "ws";
 import { v4 as uuidv4 } from "uuid";
 import { createFrameTool } from "../tools/write-tools/create-frame";
+import { PendingRequest } from '../types/mcp-server';
 
 const logger = {
   info: (message: string) => process.stderr.write(`[INFO] ${message}\n`),
@@ -16,11 +17,8 @@ const logger = {
 };
 
 let ws: WebSocket | null = null;
-const pendingRequests = new Map<string, {
-  resolve: (value: unknown) => void;
-  reject: (reason: unknown) => void;
-  timeout: ReturnType<typeof setTimeout>;
-}>();
+const pendingRequests = new Map<string, PendingRequest>();
+
 
 function connectToFigma(port: number = 3055) {
   if (ws && ws.readyState === WebSocket.OPEN) {
